@@ -9,7 +9,10 @@ data "aws_iam_policy_document" "execution_lambda_policy" {
 
     principals {
       type = "Service"
-      identifiers = ["lambda.amazonaws.com"]
+      identifiers = [
+          "lambda.amazonaws.com",
+          "apigateway.amazonaws.com"
+      ]
     }
 
   }
