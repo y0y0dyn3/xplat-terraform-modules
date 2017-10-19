@@ -1,5 +1,4 @@
 variable "lambda_arn" {}
-variable "lambda_function_name" {}
 variable "sns_arn" {}
 
 variable "assume_role_policy" {
