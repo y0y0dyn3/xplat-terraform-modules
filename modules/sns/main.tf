@@ -15,6 +15,6 @@ resource "aws_sns_topic_subscription" "sns_to_lambda_sub" {
 }
 
 resource "aws_iam_role" "default" {
-  name = "iam_for_lambda_with_sns"
+  name = "${var.iam_role_name}"
   assume_role_policy = "${var.assume_role_policy}"
 }
