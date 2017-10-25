@@ -130,7 +130,7 @@ resource "aws_cloudwatch_metric_alarm" "api_5XX" {
         ApiName = "${var.stage}_${var.name}",
         Stage = "${var.stage}"
     }
-    alarm_actions = "${var.alarm_actions}"
+    alarm_actions = ["${var.alarm_actions}"]
 }
 
 resource "aws_cloudwatch_metric_alarm" "api_4XX" {
@@ -149,5 +149,5 @@ resource "aws_cloudwatch_metric_alarm" "api_4XX" {
         ApiName = "${var.stage}_${var.name}",
         Stage = "${var.stage}"
     }
-    alarm_actions = "${var.alarm_actions}"
+    alarm_actions = ["${var.alarm_actions}"]
 }
