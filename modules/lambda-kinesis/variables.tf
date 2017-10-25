@@ -1,4 +1,5 @@
 variable "lambda_arn" {}
+variable "lambda_role_name" {}
 variable "kinesis_arn" {}
 
 variable "iam_role_name" {
