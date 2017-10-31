@@ -65,12 +65,25 @@ resource "aws_lambda_function" "lambda" {
   }
 }
 
+# Temporary work-around for https://github.com/terraform-providers/terraform-provider-aws/issues/626 -
+# aws_lambda_alias uses previous version number.
+data "template_file" "function_version" {
+  template = "$${function_version}"
+
+  vars {
+    function_version = "${aws_lambda_function.lambda.version}"
+  }
+
+  depends_on       = ["aws_lambda_function.lambda"]
+
+}
+
 resource "aws_lambda_alias" "lambda_alias" {
   name             = "${var.stage}"
   function_name    = "${aws_lambda_function.lambda.arn}"
-  function_version = "${aws_lambda_function.lambda.version}"
+  function_version = "${data.template_file.function_version.rendered}"
 
-  depends_on       = ["aws_lambda_function.lambda"]
+  depends_on       = ["aws_lambda_function.lambda", "data.template_file.function_version"]
 }
 
 # Cloudwatch
