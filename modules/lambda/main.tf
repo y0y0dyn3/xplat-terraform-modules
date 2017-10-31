@@ -59,6 +59,7 @@ resource "aws_lambda_function" "lambda" {
   publish          = "${var.publish}"
   source_code_hash = "${base64sha256(file("${var.file}"))}"
   runtime          = "${var.runtime}"
+  description      = "${var.description} (stage: ${var.stage})"
 
   environment {
     variables = "${var.env_variables}"

@@ -64,6 +64,7 @@ data "template_file" "swagger_file" {
 resource "aws_api_gateway_rest_api" "api" {
   name = "${var.stage}_${var.name}"
   body = "${data.template_file.swagger_file.rendered}"
+  description = "${var.description} (stage: ${var.stage})"
 }
 
 resource "aws_api_gateway_deployment" "stage" {

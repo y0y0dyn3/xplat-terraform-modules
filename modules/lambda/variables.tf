@@ -33,3 +33,7 @@ variable "timeout" {
   type = "string"
   default = 60
 }
+variable "description" {
+  type = "string"
+  default = ""
+}
