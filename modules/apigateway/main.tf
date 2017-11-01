@@ -58,6 +58,8 @@ data "template_file" "swagger_file" {
     lambda_arn = "${var.lambda_arn}"
     lambda_role = "${aws_iam_role.api_gateway_invoker.arn}"
     stage = "${var.stage != "prod" ? format("%s-", var.stage) : ""}"
+    api_name = "${var.stage}_${var.name}"
+    description = "${var.description} (stage: ${var.stage})"
   }
 }
 
