@@ -69,16 +69,19 @@ resource "aws_api_gateway_rest_api" "api" {
   description = "${var.description} (stage: ${var.stage})"
 }
 
-resource "aws_api_gateway_deployment" "stage" {
-  depends_on = ["aws_api_gateway_rest_api.api"]
-
+resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = "${aws_api_gateway_rest_api.api.id}"
-  stage_name  = "${var.stage}"
+  stage_name  = "${var.stage}_deploy"
 
   variables = {
     "version" = "${md5(data.template_file.swagger_file.rendered)}"
   }
+}
 
+resource "aws_api_gateway_stage" "stage" {
+  stage_name = "${var.stage}"
+  rest_api_id = "${aws_api_gateway_rest_api.api.id}"
+  deployment_id = "${aws_api_gateway_deployment.deployment.id}"
 }
 
 data "aws_acm_certificate" "ssl_cert" {
@@ -99,7 +102,7 @@ resource "aws_api_gateway_base_path_mapping" "basepath" {
   count = "${var.enable_custom_domain}"
 
   api_id      = "${aws_api_gateway_rest_api.api.id}"
-  stage_name  = "${aws_api_gateway_deployment.stage.stage_name}"
+  stage_name  = "${aws_api_gateway_stage.stage.stage_name}"
   domain_name = "${aws_api_gateway_domain_name.domain.domain_name}"
   base_path   = "${var.base_path}"
 }
