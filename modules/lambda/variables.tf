@@ -48,3 +48,13 @@ variable "description" {
   type    = "string"
   default = ""
 }
+
+variable "subnet_ids" {
+  type    = "list"
+  default = []
+}
+
+variable "security_group_ids" {
+  type    = "list"
+  default = []
+}

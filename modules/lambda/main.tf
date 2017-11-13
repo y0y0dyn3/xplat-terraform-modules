@@ -57,6 +57,11 @@ resource "aws_lambda_function" "lambda" {
   runtime          = "${var.runtime}"
   description      = "${var.description} (stage: ${var.stage})"
 
+  vpc_config {
+    subnet_ids         = ["${var.subnet_ids}"]
+    security_group_ids = ["${var.security_group_ids}"]
+  }
+
   environment {
     variables = "${var.env_variables}"
   }
