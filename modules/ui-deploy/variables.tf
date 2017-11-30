@@ -28,5 +28,6 @@ variable "stage" {
 }
 
 variable "routing_rules_template_path" {
+  default = ""
   description = "The file path to the routing rules template."
 }
