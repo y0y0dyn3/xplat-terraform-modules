@@ -90,7 +90,7 @@ data "aws_acm_certificate" "ssl_cert" {
 
 resource "aws_api_gateway_domain_name" "domain" {
   count           = "${var.enable_custom_domain}"
-  domain_name     = "${var.custom_domain}"
+  domain_name     = "${lower(var.custom_domain)}"
   certificate_arn = "${data.aws_acm_certificate.ssl_cert.arn}"
 }
 
@@ -111,7 +111,7 @@ data "aws_route53_zone" "domain" {
 resource "aws_route53_record" "custom_domain_record" {
   count   = "${var.enable_custom_domain}"
   zone_id = "${data.aws_route53_zone.domain.zone_id}"
-  name    = "${var.custom_domain}"
+  name    = "${lower(var.custom_domain)}"
   type    = "A"
 
   alias {
