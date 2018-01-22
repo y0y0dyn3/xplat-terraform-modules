@@ -58,3 +58,8 @@ variable "security_group_ids" {
   type    = "list"
   default = []
 }
+
+variable "tracing_mode" {
+  type = "string"
+  default = "PassThrough"
+}

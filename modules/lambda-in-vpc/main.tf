@@ -60,6 +60,10 @@ resource "aws_lambda_function" "lambda" {
   runtime          = "${var.runtime}"
   description      = "${var.description} (stage: ${var.stage})"
 
+  tracing_config {
+    mode = "${var.tracing_mode}"
+  }
+
   vpc_config {
     subnet_ids         = ["${var.subnet_ids}"]
     security_group_ids = ["${var.security_group_ids}"]

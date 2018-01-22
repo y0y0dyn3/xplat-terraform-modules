@@ -58,6 +58,10 @@ resource "aws_lambda_function" "lambda" {
   description      = "${var.description} (stage: ${var.stage})"
   kms_key_arn      = "${var.kms_key_arn}"
 
+  tracing_config {
+    mode = "${var.tracing_mode}"
+  }
+
   environment {
     variables = "${var.env_variables}"
   }
