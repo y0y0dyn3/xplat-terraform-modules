@@ -60,6 +60,11 @@ variable "security_group_ids" {
 }
 
 variable "tracing_mode" {
-  type = "string"
+  type    = "string"
   default = "PassThrough"
+}
+
+variable "tags" {
+  type    = "map"
+  default = {}
 }
