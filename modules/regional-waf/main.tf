@@ -15,9 +15,10 @@ locals {
 provider "aws" {
   region = "${var.region}"
 }
-data "aws_caller_identity" "current" {}
 
+data "aws_caller_identity" "current" {}
 output "aws_account_id" {
+  # used to correctly name the terraform state bucket
     value = "${data.aws_caller_identity.current.account_id}"
 }
 
