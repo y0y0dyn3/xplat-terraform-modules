@@ -10,7 +10,7 @@ variable "api_gateway_arn" {
     type = "string"
     default = ""
 }
-variable "service_name"{
+variable "service_name" {
     type = "string"
     default = ""
 }

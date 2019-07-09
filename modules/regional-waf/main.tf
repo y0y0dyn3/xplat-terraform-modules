@@ -1,6 +1,5 @@
 # Configure the remote-state backend.
 
-
 terraform { 
     backend "s3" {
         encrypt = "true"
