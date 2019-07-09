@@ -1,12 +1,3 @@
-# Configure the remote-state backend.
-
-terraform { 
-    backend "s3" {
-        encrypt = "true"
-        acl = "private"
-    }
-}
-
 provider "aws" {
   region = "${var.region}"
 }
