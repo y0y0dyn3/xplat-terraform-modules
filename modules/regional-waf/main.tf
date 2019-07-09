@@ -495,8 +495,11 @@ resource "aws_wafregional_web_acl" "rms_general_wacl" {
     metric_name = "${var.stage}rmsgeneralwacl"
     depends_on = [
         "aws_wafregional_rate_based_rule.rate_ip_throttle",
-        "aws_wafregional_ipset.iplist_throttle",
-        "aws_wafregional_rule.ip_blacklist"
+        "aws_wafregional_rule.ip_blacklist",
+        "aws_wafregional_rule.byte_match_traversal",
+        "aws_wafregional_rule.xss_match_rule",
+        "aws_wafregional_rule.byte_match_webroot",
+        "aws_wafregional_rule.sql_injection_rule"
     ]
 
     default_action {
