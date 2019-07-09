@@ -8,15 +8,11 @@ variable "region" {
 }
 variable "api_gateway_arn" {
     type = "string"
-    default = ""
+    default = "arn:aws:apigateway:${var.region}::/restapis/${var.api_id}/stages/${var.stage}"
 }
 variable "api_name" {
     type = "string"
     default = ""
 }
-variable "lambda_name" {
-    type = "string"
-    default = ""
-  
-}
+
 

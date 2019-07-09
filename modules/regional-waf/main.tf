@@ -7,18 +7,8 @@ terraform {
     }
 }
 
-locals {
-    production = "${var.stage == "prod"}"
-}
-
 provider "aws" {
   region = "${var.region}"
-}
-
-data "aws_caller_identity" "current" {}
-output "aws_account_id" {
-  # used to correctly name the terraform state bucket
-    value = "${data.aws_caller_identity.current.account_id}"
 }
 
 # for a WAF we specify the conditions -> assign the descriptor to a aws_waf_rule -> assign the rule to a aws_waf_web_acl.
