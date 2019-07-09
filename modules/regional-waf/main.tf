@@ -29,7 +29,7 @@ output "aws_account_id" {
 # Mostly taken from https://s3.us-east-2.amazonaws.com/awswaf-owasp/owasp_10_base.yml
 
 resource "aws_wafregional_ipset" "iplist_throttle" {
-    name = "${var.stage}_${var.region}_${var.lambda_name}_iplist_throttle"
+    name = "${var.stage}_${var.region}_${var.api_name}_iplist_throttle"
 
     ip_set_descriptor {
         type = "IPV4"
@@ -43,7 +43,7 @@ resource "aws_wafregional_ipset" "iplist_throttle" {
 ## Matches IP addresses that should not be allowed to access content
 
 resource "aws_wafregional_ipset" "iplist_blacklist" {
-    name = "${var.stage}_${var.region}_${var.lambda_name}_iplist_blacklist"
+    name = "${var.stage}_${var.region}_${var.api_name}_iplist_blacklist"
 
 #    ip_set_descriptor {
 #        type = "IPV4"
@@ -58,7 +58,7 @@ resource "aws_wafregional_ipset" "iplist_blacklist" {
 ## Mitigate Cross Site Scripting Attacks
 ## Matches attempted XSS patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_wafregional_xss_match_set" "xss_match_conditions" {
-    name = "${var.stage}_${var.region}_${var.lambda_name}_xss_match_conditions"
+    name = "${var.stage}_${var.region}_${var.api_name}_xss_match_conditions"
 
     xss_match_tuple {
     text_transformation = "URL_DECODE"
@@ -136,7 +136,7 @@ resource "aws_wafregional_xss_match_set" "xss_match_conditions" {
 ## Mitigate SQL Injection Attacks
 ## Matches attempted SQLi patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_wafregional_sql_injection_match_set" "sql_injection_match_set" {
-  name = "${var.stage}_${var.region}_${var.lambda_name}_sql_injection_match_set"
+  name = "${var.stage}_${var.region}_${var.api_name}_sql_injection_match_set"
 
   sql_injection_match_tuple {
     text_transformation = "URL_DECODE"
@@ -213,7 +213,7 @@ resource "aws_wafregional_sql_injection_match_set" "sql_injection_match_set" {
 ## local or remote files
 
 resource "aws_wafregional_byte_match_set" "byte_set_traversal" {
-  name = "${var.stage}_${var.region}_${var.lambda_name}__byte_match_set"
+  name = "${var.stage}_${var.region}_${var.api_name}__byte_match_set"
 
   byte_match_tuples {
     text_transformation   = "URL_DECODE"
@@ -302,7 +302,7 @@ resource "aws_wafregional_byte_match_set" "byte_set_traversal" {
 ## Server-side includes & libraries in webroot
 ## Matches request patterns for webroot objects that shouldn't be directly accessible
 resource "aws_wafregional_byte_match_set" "byte_set_webroot_requests" {
-    name = "${var.stage}_${var.region}_${var.lambda_name}__byte_match_webroot_requests"
+    name = "${var.stage}_${var.region}_${var.api_name}__byte_match_webroot_requests"
 
     byte_match_tuples {
     text_transformation   = "LOWERCASE"
@@ -405,7 +405,7 @@ resource "aws_wafregional_byte_match_set" "byte_set_webroot_requests" {
 
 resource "aws_wafregional_rule" "ip_blacklist" {
 
-    name = "${var.stage}_${var.region}_${var.lambda_name}_ip_blacklist"
+    name = "${var.stage}_${var.region}_${var.api_name}_ip_blacklist"
     metric_name = "${var.stage}ipblacklist"
 
     predicate {
@@ -418,7 +418,7 @@ resource "aws_wafregional_rule" "ip_blacklist" {
 
 resource "aws_wafregional_rate_based_rule" "rate_ip_throttle" {
 
-    name = "${var.stage}_${var.region}_${var.lambda_name}_ip_throttle"
+    name = "${var.stage}_${var.region}_${var.api_name}_ip_throttle"
     metric_name = "${var.stage}ipthrottle"
 
     rate_key = "IP"
@@ -438,7 +438,7 @@ resource "aws_wafregional_rate_based_rule" "rate_ip_throttle" {
 ## Mitigate Cross Site Scripting Attacks
 ## Matches attempted XSS patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_wafregional_rule" "xss_match_rule" {
-    name = "${var.stage}_${var.region}_${var.lambda_name}_xss_match_rule"
+    name = "${var.stage}_${var.region}_${var.api_name}_xss_match_rule"
     metric_name = "${var.stage}xssmatchrule"
 
     predicate {
@@ -456,7 +456,7 @@ resource "aws_wafregional_rule" "xss_match_rule" {
 ## Matches attempted SQLi patterns in the URI, QUERY_STRING, BODY, COOKIES
 
 resource "aws_wafregional_rule" "sql_injection_rule" {
-    name = "${var.stage}_${var.region}_${var.lambda_name}_sql_injection_rule"
+    name = "${var.stage}_${var.region}_${var.api_name}_sql_injection_rule"
     metric_name = "${var.stage}sqlinjectionrule"
 
     predicate {
@@ -475,7 +475,7 @@ resource "aws_wafregional_rule" "sql_injection_rule" {
 
 resource "aws_wafregional_rule" "byte_match_traversal" {
   
-  name = "${var.stage}_${var.region}_${var.lambda_name}_byte_match_traversal"
+  name = "${var.stage}_${var.region}_${var.api_name}_byte_match_traversal"
   metric_name = "${var.stage}bytematchtraversalrule"
   
   predicate {
@@ -494,7 +494,7 @@ resource "aws_wafregional_rule" "byte_match_traversal" {
 ## Matches request patterns for webroot objects that shouldn't be directly accessible
 resource "aws_wafregional_rule" "byte_match_webroot" {
   
-  name = "${var.stage}_${var.region}_${var.lambda_name}_byte_match_webroot"
+  name = "${var.stage}_${var.region}_${var.api_name}_byte_match_webroot"
   metric_name = "${var.stage}bytematchwebrootrule"
   
   predicate {
@@ -510,7 +510,7 @@ resource "aws_wafregional_rule" "byte_match_webroot" {
 
 # Web ACLs
 resource "aws_wafregional_web_acl" "rms_general_wacl" {
-    name = "${var.stage}_${var.region}_${var.lambda_name}_rms_general_wacl"
+    name = "${var.stage}_${var.region}_${var.api_name}_rms_general_wacl"
     metric_name = "${var.stage}rmsgeneralwacl"
     depends_on = [
         "aws_wafregional_rate_based_rule.rate_ip_throttle",
