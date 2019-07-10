@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 # for a WAF we specify the conditions -> assign the descriptor to a aws_waf_rule -> assign the rule to a aws_waf_web_acl.
-# an aws_waf_web_acl can contain many rules.
+# a aws_waf_web_acl can contain many rules.
 # a aws_waf_rule can be utilized by more than one aws_waf_web_acl.
 
 # Conditions
