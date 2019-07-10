@@ -490,9 +490,9 @@ resource "aws_wafregional_rule" "byte_match_webroot" {
 
 
 # Web ACLs
-resource "aws_wafregional_web_acl" "rms_general_wacl" {
-    name = "${var.stage}_${var.region}_${var.api_name}_rms_general_wacl"
-    metric_name = "${var.stage}rmsgeneralwacl"
+resource "aws_wafregional_web_acl" "rms_web_acl" {
+    name = "${var.stage}_${var.region}_${var.api_name}_rms_web_acl"
+    metric_name = "${var.stage}rmswebacl"
     depends_on = [
         "aws_wafregional_rate_based_rule.rate_ip_throttle",
         "aws_wafregional_rule.ip_blacklist",
@@ -503,12 +503,12 @@ resource "aws_wafregional_web_acl" "rms_general_wacl" {
     ]
 
     default_action {
-       type = "ALLOW"
+       type = "${var.web_acl_default_action}"
         }
 
     rule {
         action {
-            type = "COUNT"
+            type = "${var.ip_blacklist_default_action}"
             }
         priority = 10
         rule_id = "${aws_wafregional_rule.ip_blacklist.id}"
@@ -516,7 +516,7 @@ resource "aws_wafregional_web_acl" "rms_general_wacl" {
     }
     rule {
         action {
-            type = "COUNT"
+            type = "${var.rate_ip_throttle_default_action}"
             }
         priority = 20
         rule_id = "${aws_wafregional_rate_based_rule.rate_ip_throttle.id}"
@@ -527,7 +527,7 @@ resource "aws_wafregional_web_acl" "rms_general_wacl" {
     }
     rule {
         action {
-            type = "COUNT"
+            type = "${var.xss_match_rule_default_action}"
             }
         priority = 30
         rule_id = "${aws_wafregional_rule.xss_match_rule.id}"
@@ -536,7 +536,7 @@ resource "aws_wafregional_web_acl" "rms_general_wacl" {
 
         rule {
         action {
-            type = "COUNT"
+            type = "${var.byte_match_traversal_default_action}"
             }
         priority = 40
         rule_id = "${aws_wafregional_rule.byte_match_traversal.id}"
@@ -545,7 +545,7 @@ resource "aws_wafregional_web_acl" "rms_general_wacl" {
 
         rule {
         action {
-            type = "COUNT"
+            type = "${var.byte_match_webroot_default_action}"
             }
         priority = 50
         rule_id = "${aws_wafregional_rule.byte_match_webroot.id}"
@@ -567,5 +567,5 @@ resource "aws_wafregional_web_acl" "rms_general_wacl" {
 resource "aws_wafregional_web_acl_association" "web_acl_association" {
     # https://stackoverflow.com/questions/48514180/how-can-i-find-the-arn-of-an-api-gateway-stage
     resource_arn = "${var.api_gateway_arn}"
-    web_acl_id = "${aws_wafregional_web_acl.rms_general_wacl.id}"
+    web_acl_id = "${aws_wafregional_web_acl.rms_web_acl.id}"
 }
