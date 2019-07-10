@@ -28,10 +28,10 @@ resource "aws_wafregional_ipset" "iplist_blacklist" {
 
 # RULE in place. Use UI in an emergency to add new IP sets. Clean up terraform if IP block becomes 
 # permanent.
-    ip_set_descriptor {
-        type = "IPV4"
-        value = ""
-    }
+    #ip_set_descriptor {
+    #    type = "IPV4"
+    #    value = ""
+    #}
 }
 
 
