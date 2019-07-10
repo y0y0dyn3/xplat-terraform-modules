@@ -554,7 +554,7 @@ resource "aws_wafregional_web_acl" "rms_web_acl" {
 
         rule {
         action {
-            type = "COUNT"
+            type = "${var.sql_injection_default_action}"
             }
         priority = 60
         rule_id = "${aws_wafregional_rule.sql_injection_rule.id}"
