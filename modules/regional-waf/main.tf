@@ -13,7 +13,7 @@ resource "aws_wafregional_ipset" "iplist_throttle" {
     name = "${var.stage}_${var.region}_${var.api_name}_iplist_throttle"
 
     ip_set_descriptor {
-        type = "IPV4"
+        type  = "IPV4"
         value = "0.0.0.0/32"
     }
 }
@@ -26,11 +26,12 @@ resource "aws_wafregional_ipset" "iplist_throttle" {
 resource "aws_wafregional_ipset" "iplist_blacklist" {
     name = "${var.stage}_${var.region}_${var.api_name}_iplist_blacklist"
 
+# RULE in place. Use UI in an emergency to add new IP sets. Clean up terraform if IP block becomes 
+# permanent.
 #    ip_set_descriptor {
 #        type = "IPV4"
 #        value = "0.0.0.0/32"
 #    }
-
 }
 
 
@@ -96,7 +97,6 @@ resource "aws_wafregional_xss_match_set" "xss_match_conditions" {
       type = "HEADER"
       data = "cookie"
     }
-
   }
 
           xss_match_tuple {
@@ -106,11 +106,7 @@ resource "aws_wafregional_xss_match_set" "xss_match_conditions" {
       type = "HEADER"
       data = "cookie"
     }
-
   }
-
-
-
 }
 
 ## OWASP Top 10 A1
@@ -386,11 +382,11 @@ resource "aws_wafregional_byte_match_set" "byte_set_webroot_requests" {
 
 resource "aws_wafregional_rule" "ip_blacklist" {
 
-    name = "${var.stage}_${var.region}_${var.api_name}_ip_blacklist"
+    name        = "${var.stage}_${var.region}_${var.api_name}_ip_blacklist"
     metric_name = "${var.stage}ipblacklist"
 
     predicate {
-        type = "IPMatch"
+        type    = "IPMatch"
         data_id = "${aws_wafregional_ipset.iplist_blacklist.id}"
         negated = false
     }
@@ -399,14 +395,14 @@ resource "aws_wafregional_rule" "ip_blacklist" {
 
 resource "aws_wafregional_rate_based_rule" "rate_ip_throttle" {
 
-    name = "${var.stage}_${var.region}_${var.api_name}_ip_throttle"
+    name        = "${var.stage}_${var.region}_${var.api_name}_ip_throttle"
     metric_name = "${var.stage}ipthrottle"
 
-    rate_key = "IP"
-    rate_limit = "${var.rate_ip_throttle_limit}"
+    rate_key    = "IP"
+    rate_limit  = "${var.rate_ip_throttle_limit}"
 
     predicate {
-        type = "IPMatch"
+        type    = "IPMatch"
         data_id = "${aws_wafregional_ipset.iplist_throttle.id}"
         negated = false
     }
@@ -419,11 +415,11 @@ resource "aws_wafregional_rate_based_rule" "rate_ip_throttle" {
 ## Mitigate Cross Site Scripting Attacks
 ## Matches attempted XSS patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_wafregional_rule" "xss_match_rule" {
-    name = "${var.stage}_${var.region}_${var.api_name}_xss_match_rule"
+    name        = "${var.stage}_${var.region}_${var.api_name}_xss_match_rule"
     metric_name = "${var.stage}xssmatchrule"
 
     predicate {
-        type = "XssMatch"
+        type    = "XssMatch"
         data_id = "${aws_wafregional_xss_match_set.xss_match_conditions.id}"
         negated = false
     }
@@ -437,11 +433,11 @@ resource "aws_wafregional_rule" "xss_match_rule" {
 ## Matches attempted SQLi patterns in the URI, QUERY_STRING, BODY, COOKIES
 
 resource "aws_wafregional_rule" "sql_injection_rule" {
-    name = "${var.stage}_${var.region}_${var.api_name}_sql_injection_rule"
+    name        = "${var.stage}_${var.region}_${var.api_name}_sql_injection_rule"
     metric_name = "${var.stage}sqlinjectionrule"
 
     predicate {
-        type = "SqlInjectionMatch"
+        type    = "SqlInjectionMatch"
         data_id = "${aws_wafregional_sql_injection_match_set.sql_injection_match_set.id}"
         negated = false
     }
@@ -456,11 +452,11 @@ resource "aws_wafregional_rule" "sql_injection_rule" {
 
 resource "aws_wafregional_rule" "byte_match_traversal" {
   
-  name = "${var.stage}_${var.region}_${var.api_name}_byte_match_traversal"
+  name        = "${var.stage}_${var.region}_${var.api_name}_byte_match_traversal"
   metric_name = "${var.stage}bytematchtraversalrule"
   
   predicate {
-      type = "ByteMatch"
+      type    = "ByteMatch"
       data_id = "${aws_wafregional_byte_match_set.byte_set_traversal.id}"
       negated = false
   }
@@ -475,11 +471,11 @@ resource "aws_wafregional_rule" "byte_match_traversal" {
 ## Matches request patterns for webroot objects that shouldn't be directly accessible
 resource "aws_wafregional_rule" "byte_match_webroot" {
   
-  name = "${var.stage}_${var.region}_${var.api_name}_byte_match_webroot"
+  name        = "${var.stage}_${var.region}_${var.api_name}_byte_match_webroot"
   metric_name = "${var.stage}bytematchwebrootrule"
   
   predicate {
-      type = "ByteMatch"
+      type    = "ByteMatch"
       data_id = "${aws_wafregional_byte_match_set.byte_set_webroot_requests.id}"
       negated = false
   }
@@ -491,9 +487,9 @@ resource "aws_wafregional_rule" "byte_match_webroot" {
 
 # Web ACLs
 resource "aws_wafregional_web_acl" "rms_web_acl" {
-    name = "${var.stage}_${var.region}_${var.api_name}_rms_web_acl"
+    name        = "${var.stage}_${var.region}_${var.api_name}_rms_web_acl"
     metric_name = "${var.stage}rmswebacl"
-    depends_on = [
+    depends_on  = [
         "aws_wafregional_rate_based_rule.rate_ip_throttle",
         "aws_wafregional_rule.ip_blacklist",
         "aws_wafregional_rule.byte_match_traversal",
@@ -510,16 +506,16 @@ resource "aws_wafregional_web_acl" "rms_web_acl" {
         action {
             type = "${var.ip_blacklist_default_action}"
             }
-        priority = 10
-        rule_id = "${aws_wafregional_rule.ip_blacklist.id}"
-        type = "REGULAR"
+        priority  = 10
+        rule_id   = "${aws_wafregional_rule.ip_blacklist.id}"
+        type      = "REGULAR"
     }
     rule {
         action {
             type = "${var.rate_ip_throttle_default_action}"
             }
-        priority = 20
-        rule_id = "${aws_wafregional_rate_based_rule.rate_ip_throttle.id}"
+        priority  = 20
+        rule_id   = "${aws_wafregional_rate_based_rule.rate_ip_throttle.id}"
         # Must be RATE_BASED, GROUP or REGULAR
         # If you fail to declare this, the rule will not be applied to the ACL.
         # https://docs.aws.amazon.com/waf/latest/APIReference/API_regional_UpdateWebACL.html
@@ -529,43 +525,42 @@ resource "aws_wafregional_web_acl" "rms_web_acl" {
         action {
             type = "${var.xss_match_rule_default_action}"
             }
-        priority = 30
-        rule_id = "${aws_wafregional_rule.xss_match_rule.id}"
-        type = "REGULAR"
+        priority  = 30
+        rule_id   = "${aws_wafregional_rule.xss_match_rule.id}"
+        type      = "REGULAR"
     }
 
         rule {
         action {
             type = "${var.byte_match_traversal_default_action}"
             }
-        priority = 40
-        rule_id = "${aws_wafregional_rule.byte_match_traversal.id}"
-        type = "REGULAR"
+        priority  = 40
+        rule_id   = "${aws_wafregional_rule.byte_match_traversal.id}"
+        type      = "REGULAR"
     }
 
         rule {
         action {
             type = "${var.byte_match_webroot_default_action}"
             }
-        priority = 50
-        rule_id = "${aws_wafregional_rule.byte_match_webroot.id}"
-        type = "REGULAR"
+        priority  = 50
+        rule_id   = "${aws_wafregional_rule.byte_match_webroot.id}"
+        type      = "REGULAR"
     }
 
         rule {
         action {
             type = "${var.sql_injection_default_action}"
             }
-        priority = 60
-        rule_id = "${aws_wafregional_rule.sql_injection_rule.id}"
-        type = "REGULAR"
+        priority  = 60
+        rule_id   = "${aws_wafregional_rule.sql_injection_rule.id}"
+        type      = "REGULAR"
     }
 
 }
 
 
 resource "aws_wafregional_web_acl_association" "web_acl_association" {
-    # https://stackoverflow.com/questions/48514180/how-can-i-find-the-arn-of-an-api-gateway-stage
-    resource_arn = "${var.api_gateway_arn}"
-    web_acl_id = "${aws_wafregional_web_acl.rms_web_acl.id}"
+    resource_arn  = "${var.api_gateway_arn}"
+    web_acl_id    = "${aws_wafregional_web_acl.rms_web_acl.id}"
 }
