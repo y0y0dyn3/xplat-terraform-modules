@@ -403,7 +403,7 @@ resource "aws_wafregional_rate_based_rule" "rate_ip_throttle" {
     metric_name = "${var.stage}ipthrottle"
 
     rate_key = "IP"
-    rate_limit = 5000
+    rate_limit = "${var.rate_ip_throttle_limit}"
 
     predicate {
         type = "IPMatch"

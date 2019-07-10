@@ -16,7 +16,7 @@ variable "api_name" {
 }
 # Valid values are BLOCK or ALLOW
 # The correct setting is almost always ALLOW.
-variable "web_acl_default_action"{
+variable "web_acl_default_action" {
     type = "string"
     default = "ALLOW"
 }
@@ -56,5 +56,8 @@ variable "sql_injection_default_action" {
     default = "COUNT"
 }
 
-
-
+# Requests per 5 Minutes.
+variable "rate_ip_throttle_limit" {
+    type = "string"
+    default = 5000
+}
