@@ -6,7 +6,7 @@ variable "region" {
     type    = "string"
     default = ""
 }
-variable "api_gateway_arn" {
+variable "acl_association_resource_arn" {
     type    = "string"
     default = ""
 }
