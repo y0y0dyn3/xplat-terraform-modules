@@ -14,7 +14,7 @@ Network Hygiene for API Gateways and Application Load Balancers.
 
 iplist_blacklist rule:  The rule is in place with no associated IPs. In an emergency, use the UI to add new IP sets. Clean up terraform if IP block becomes permanent.<br/>
 
-direct link: https://console.aws.amazon.com/wafv2/home?region=us-east-1#/rules/detail/REGULAR/<br/>
+Direct Link: https://console.aws.amazon.com/wafv2/home?region=us-east-1#/rules/detail/REGULAR/<br/>
 Documentation: https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html
 
 
