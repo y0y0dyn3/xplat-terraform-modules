@@ -2,10 +2,6 @@ provider "aws" {
   region = "${var.region}"
 }
 
-metric_api_name = replace("${var.api_name}", "-", "")
-metric_region = replace(${var.region}, "-", "")
-
-
 # for a WAF we specify the conditions -> assign the descriptor to a aws_waf_rule -> assign the rule to a aws_waf_web_acl.
 # a aws_waf_web_acl can contain many rules.
 # a aws_waf_rule can be utilized by more than one aws_waf_web_acl.
@@ -379,11 +375,10 @@ resource "aws_wafregional_byte_match_set" "byte_set_webroot_requests" {
 
 # Rules
 
-metric_api_name = "${replace(var.api_name, "/\W/", "")}"
+metric_api_name = "${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}"
 
 output "metric_api_name_out" {
-  value = metric_api_name
-}
+  value = "${metric_api_name}"
 
 ## 10.
 ## Generic
