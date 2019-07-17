@@ -379,7 +379,7 @@ resource "aws_wafregional_byte_match_set" "byte_set_webroot_requests" {
 
 # Rules
 
-metric_api_name = "${replace(var.api_name, "-", "")}"
+metric_api_name = "${replace(var.api_name, "/\W/", "")}"
 
 output "metric_api_name_out" {
   value = metric_api_name
