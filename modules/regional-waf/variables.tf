@@ -75,8 +75,3 @@ variable "rate_ip_throttle_limit" {
     default = 5000
 }
 
-#variable "metric_api_name" {
-#  type = "string"
-#  default = ""
-#}
-
