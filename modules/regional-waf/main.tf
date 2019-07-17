@@ -379,6 +379,12 @@ resource "aws_wafregional_byte_match_set" "byte_set_webroot_requests" {
 
 # Rules
 
+metric_api_name = "${replace(var.api_name, "-", "")}"
+
+output "metric_api_name_out" {
+  value = metric_api_name
+}
+
 ## 10.
 ## Generic
 ## IP Blacklist
@@ -414,11 +420,7 @@ resource "aws_wafregional_rate_based_rule" "rate_ip_throttle" {
     depends_on = ["aws_wafregional_ipset.iplist_throttle"]
 
 }
-metric_api_name = replace(var.api_name, "-", "")
 
-output "metric_api_name_out" {
-  value = metric_api_name
-}
 ## OWASP Top 10 A3
 ## Mitigate Cross Site Scripting Attacks
 ## Matches attempted XSS patterns in the URI, QUERY_STRING, BODY, COOKIES
