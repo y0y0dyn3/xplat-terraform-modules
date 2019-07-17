@@ -379,6 +379,7 @@ metric_api_name = "${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}"
 
 output "metric_api_name_out" {
   value = "${metric_api_name}"
+}
 
 ## 10.
 ## Generic
