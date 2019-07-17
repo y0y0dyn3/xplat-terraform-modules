@@ -375,15 +375,6 @@ resource "aws_wafregional_byte_match_set" "byte_set_webroot_requests" {
 
 # Rules
 
-variable "metric_api_name" {
-  type = "string"
-  value = "${replace("blah", "/[^a-zA-Z0-9_]/", "")}"
-}
-
-output "metric_api_name_out" {
-  value = "${var.metric_api_name}"
-}
-
 ## 10.
 ## Generic
 ## IP Blacklist
