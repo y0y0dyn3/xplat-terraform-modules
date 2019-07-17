@@ -375,15 +375,6 @@ resource "aws_wafregional_byte_match_set" "byte_set_webroot_requests" {
 
 # Rules
 
-variable "metric_api_name" {
-  type = "string"
-  value = "${replace("blah", "/[^a-zA-Z0-9_]/", "")}"
-}
-
-output "metric_api_name_out" {
-  value = "${var.metric_api_name}"
-}
-
 ## 10.
 ## Generic
 ## IP Blacklist
@@ -392,7 +383,7 @@ output "metric_api_name_out" {
 resource "aws_wafregional_rule" "ip_blacklist" {
 
     name        = "${var.stage}_${var.region}_${var.api_name}_ip_blacklist"
-    metric_name = "${var.stage}ipblacklist"
+    metric_name = "${var.stage}_${var.region}_${var.api_name}_ip_blacklist"
 
     predicate {
         type    = "IPMatch"
