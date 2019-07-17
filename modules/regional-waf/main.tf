@@ -2,6 +2,10 @@ provider "aws" {
   region = "${var.region}"
 }
 
+metric_api_name = replace("${var.api_name}", "-", "")
+metric_region = replace(${var.region}, "-", "")
+
+
 # for a WAF we specify the conditions -> assign the descriptor to a aws_waf_rule -> assign the rule to a aws_waf_web_acl.
 # a aws_waf_web_acl can contain many rules.
 # a aws_waf_rule can be utilized by more than one aws_waf_web_acl.
@@ -14,7 +18,7 @@ resource "aws_wafregional_ipset" "iplist_throttle" {
 
     ip_set_descriptor {
         type  = "IPV4"
-        value = "0.0.0.0/32"
+        value = "${var.iplist_throttle_CIDR_0}"
     }
 }
 
@@ -410,7 +414,11 @@ resource "aws_wafregional_rate_based_rule" "rate_ip_throttle" {
     depends_on = ["aws_wafregional_ipset.iplist_throttle"]
 
 }
+metric_api_name = replace(var.api_name, "-", "")
 
+output "metric_api_name_out" {
+  value = metric_api_name
+}
 ## OWASP Top 10 A3
 ## Mitigate Cross Site Scripting Attacks
 ## Matches attempted XSS patterns in the URI, QUERY_STRING, BODY, COOKIES

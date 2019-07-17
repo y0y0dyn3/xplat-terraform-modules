@@ -56,6 +56,19 @@ variable "sql_injection_default_action" {
     default = "COUNT"
 }
 
+# rate throttle IP Range(s)
+# Must be in CIDR format
+variable "iplist_throttle_CIDR_0" {
+    type = "string"
+    default = "0.0.0.0/32"
+}
+
+#variable "iplist_throttle_CIDR_1" {
+#    type = "string"
+#    default = "0.0.0.0/32"
+#}
+
+
 # Requests per 5 Minutes.
 variable "rate_ip_throttle_limit" {
     type    = "string"
