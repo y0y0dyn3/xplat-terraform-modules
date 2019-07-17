@@ -495,7 +495,7 @@ resource "aws_wafregional_rule" "byte_match_webroot" {
 resource "aws_wafregional_web_acl" "rms_web_acl" {
     name        = "${var.stage}_${var.region}_${var.api_name}_rms_web_acl"
     # metric_name is alpha numeric only.
-    metric_name = "${var.stage}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}rmswebacl"
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}rmswebacl"
     depends_on  = [
         "aws_wafregional_rate_based_rule.rate_ip_throttle",
         "aws_wafregional_rule.ip_blacklist",
