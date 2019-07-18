@@ -63,12 +63,6 @@ variable "iplist_throttle_CIDR_0" {
     default = "0.0.0.0/32"
 }
 
-#variable "iplist_throttle_CIDR_1" {
-#    type = "string"
-#    default = "0.0.0.0/32"
-#}
-
-
 # Requests per 5 Minutes.
 variable "rate_ip_throttle_limit" {
     type    = "string"
