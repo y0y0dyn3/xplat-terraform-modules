@@ -14,7 +14,7 @@ resource "aws_wafregional_ipset" "iplist_throttle" {
 
     ip_set_descriptor {
         type  = "IPV4"
-        value = "0.0.0.0/32"
+        value = "${var.iplist_throttle_CIDR_0}"
     }
 }
 
@@ -383,7 +383,8 @@ resource "aws_wafregional_byte_match_set" "byte_set_webroot_requests" {
 resource "aws_wafregional_rule" "ip_blacklist" {
 
     name        = "${var.stage}_${var.region}_${var.api_name}_ip_blacklist"
-    metric_name = "${var.stage}ipblacklist"
+    # metric_name is alpha numeric only.
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}ipblacklist"
 
     predicate {
         type    = "IPMatch"
@@ -396,7 +397,8 @@ resource "aws_wafregional_rule" "ip_blacklist" {
 resource "aws_wafregional_rate_based_rule" "rate_ip_throttle" {
 
     name        = "${var.stage}_${var.region}_${var.api_name}_ip_throttle"
-    metric_name = "${var.stage}ipthrottle"
+    # metric_name is alpha numeric only.
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}ipthrottle"
 
     rate_key    = "IP"
     rate_limit  = "${var.rate_ip_throttle_limit}"
@@ -416,7 +418,8 @@ resource "aws_wafregional_rate_based_rule" "rate_ip_throttle" {
 ## Matches attempted XSS patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_wafregional_rule" "xss_match_rule" {
     name        = "${var.stage}_${var.region}_${var.api_name}_xss_match_rule"
-    metric_name = "${var.stage}xssmatchrule"
+    # metric_name is alpha numeric only.
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}xssmatchrule"
 
     predicate {
         type    = "XssMatch"
@@ -434,7 +437,8 @@ resource "aws_wafregional_rule" "xss_match_rule" {
 
 resource "aws_wafregional_rule" "sql_injection_rule" {
     name        = "${var.stage}_${var.region}_${var.api_name}_sql_injection_rule"
-    metric_name = "${var.stage}sqlinjectionrule"
+    # metric_name is alpha numeric only.
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}sqlinjectionrule"
 
     predicate {
         type    = "SqlInjectionMatch"
@@ -453,7 +457,8 @@ resource "aws_wafregional_rule" "sql_injection_rule" {
 resource "aws_wafregional_rule" "byte_match_traversal" {
   
   name        = "${var.stage}_${var.region}_${var.api_name}_byte_match_traversal"
-  metric_name = "${var.stage}bytematchtraversalrule"
+  # metric_name is alpha numeric only.
+  metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}bytematchtraversalrule"
   
   predicate {
       type    = "ByteMatch"
@@ -472,7 +477,8 @@ resource "aws_wafregional_rule" "byte_match_traversal" {
 resource "aws_wafregional_rule" "byte_match_webroot" {
   
   name        = "${var.stage}_${var.region}_${var.api_name}_byte_match_webroot"
-  metric_name = "${var.stage}bytematchwebrootrule"
+  # metric_name is alpha numeric only.
+  metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}bytematchwebrootrule"
   
   predicate {
       type    = "ByteMatch"
@@ -488,7 +494,8 @@ resource "aws_wafregional_rule" "byte_match_webroot" {
 # Web ACLs
 resource "aws_wafregional_web_acl" "rms_web_acl" {
     name        = "${var.stage}_${var.region}_${var.api_name}_rms_web_acl"
-    metric_name = "${var.stage}rmswebacl"
+    # metric_name is alpha numeric only.
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}rmswebacl"
     depends_on  = [
         "aws_wafregional_rate_based_rule.rate_ip_throttle",
         "aws_wafregional_rule.ip_blacklist",
