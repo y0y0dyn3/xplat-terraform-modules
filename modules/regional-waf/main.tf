@@ -25,6 +25,7 @@ resource "aws_wafregional_ipset" "iplist_throttle" {
 
 resource "aws_wafregional_ipset" "iplist_blacklist" {
     name = "${var.stage}_${var.region}_${var.api_name}_iplist_blacklist"
+    count = 0
 
 # RULE in place. Use UI in an emergency to add new IP sets. Clean up terraform if IP block becomes 
 # permanent.
