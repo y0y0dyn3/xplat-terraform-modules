@@ -51,7 +51,7 @@ module "regional_waf" {
   rate_ip_throttle_limit = 2000
 
   # Default Value is 0.  This is an all or nothing setting.
-  # All conditions, rules, WebACLS, and WAF assoctiations
+  # All conditions, rules, WebACLS, and WAF associations
   # are governed by this value.
   #
   # When deploying to the test account, please use stage "test" and not your personal 
