@@ -70,7 +70,7 @@ variable "rate_ip_throttle_limit" {
 }
 
 # Because COUNT still does not exist for modules.
-# this enables us to selectively deploy this resource to 
+# This enables us to selectively deploy this resource to 
 # only to certain stages, ie.  test, vs dev, vs prod.
 # As of this PR there are still some very low per account
 # resource limits for rate based rules. 
