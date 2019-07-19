@@ -509,6 +509,7 @@ resource "aws_wafregional_web_acl" "rms_web_acl" {
     default_action {
        type = "${var.web_acl_default_action}"
         }
+    count = 0
 
     rule {
         action {
@@ -517,7 +518,6 @@ resource "aws_wafregional_web_acl" "rms_web_acl" {
         priority  = 10
         rule_id   = "${aws_wafregional_rule.ip_blacklist.id}"
         type      = "REGULAR"
-        count = 0
     }
     rule {
         action {
