@@ -572,4 +572,5 @@ resource "aws_wafregional_web_acl" "rms_web_acl" {
 resource "aws_wafregional_web_acl_association" "web_acl_association" {
     resource_arn  = "${var.acl_association_resource_arn}"
     web_acl_id    = "${aws_wafregional_web_acl.rms_web_acl.id}"
+    count = 0
 }
