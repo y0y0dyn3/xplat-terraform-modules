@@ -69,3 +69,23 @@ variable "rate_ip_throttle_limit" {
     default = 5000
 }
 
+# Because COUNT still does not exist for modules.
+# this enables us to selectively deploy this resource to 
+# only to certain stages, ie.  test, vs dev, vs prod.
+# As of this PR there are still some very low per account
+# resource limits for rate based rules. 
+# https://docs.aws.amazon.com/waf/latest/developerguide/limits.html
+# This is problematic in cases where you have test accounts with multiple projects
+# and multiple developers each running named instances that use this module.
+# 
+# BE AWARE THAT THIS IS A SINGLE SETTING FOR THE WHOLE MODULE.
+# THERE IS NO GRANULARITY TO THIS SETTING.
+#
+# Setting the default to 0 to ensure that deployment of the WAF
+# is an intentional decision.
+
+variable "enabled" {
+    type = "string"
+    default = 0
+}
+
