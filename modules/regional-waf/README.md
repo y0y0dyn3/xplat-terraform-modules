@@ -49,5 +49,14 @@ module "regional_waf" {
 
   # Requests per 5 minutes.  Default in variables.tf = 5000.
   rate_ip_throttle_limit = 2000
+
+  # Default Value is 0.  This is an all or nothing setting.
+  # All conditions, rules, WebACLS, and WAF associations
+  # are governed by this value.
+  #
+  # When deploying to the test account, please use stage "test" and not your personal 
+  # stage to avoid exhausting AWS resource limits for a WAF.
+
+  enabled = "${var.stage == "test" || var.stage == "development" || var.stage == "production" ? 1 : 0}"
 }
 ```
