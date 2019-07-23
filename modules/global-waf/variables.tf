@@ -6,7 +6,7 @@ variable "acl_association_resource_arn" {
     type    = "string"
     default = ""
 }
-variable "api_name" {
+variable "cloudfront_name" {
     type    = "string"
     default = ""
 }
