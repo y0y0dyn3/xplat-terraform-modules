@@ -1,4 +1,5 @@
 provider "aws" {
+  region = "${var.region}"
 }
 
 # for a WAF we specify the conditions -> assign the descriptor to a aws_waf_rule -> assign the rule to a aws_waf_web_acl.
@@ -9,7 +10,7 @@ provider "aws" {
 # Mostly taken from https://s3.us-east-2.amazonaws.com/awswaf-owasp/owasp_10_base.yml
 
 resource "aws_waf_ipset" "iplist_throttle" {
-    name  = "${var.stage}_${var.cloudfront_name}_iplist_throttle"
+    name  = "${var.stage}_${var.region}_${var.api_name}_iplist_throttle"
 
     count = "${var.enabled}"
 
@@ -25,7 +26,7 @@ resource "aws_waf_ipset" "iplist_throttle" {
 ## Matches IP addresses that should not be allowed to access content
 
 resource "aws_waf_ipset" "iplist_blacklist" {
-    name  = "${var.stage}_${var.cloudfront_name}_iplist_blacklist"
+    name  = "${var.stage}_${var.region}_${var.api_name}_iplist_blacklist"
 
     count = "${var.enabled}"
 
@@ -43,7 +44,7 @@ resource "aws_waf_ipset" "iplist_blacklist" {
 ## Mitigate Cross Site Scripting Attacks
 ## Matches attempted XSS patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_waf_xss_match_set" "xss_match_conditions" {
-    name  = "${var.stage}_${var.cloudfront_name}_xss_match_conditions"
+    name  = "${var.stage}_${var.region}_${var.api_name}_xss_match_conditions"
 
     count = "${var.enabled}"
 
@@ -118,7 +119,7 @@ resource "aws_waf_xss_match_set" "xss_match_conditions" {
 ## Mitigate SQL Injection Attacks
 ## Matches attempted SQLi patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_waf_sql_injection_match_set" "sql_injection_match_set" {
-  name = "${var.stage}_${var.cloudfront_name}_sql_injection_match_set"
+  name = "${var.stage}_${var.region}_${var.api_name}_sql_injection_match_set"
 
   count = "${var.enabled}"
 
@@ -197,7 +198,7 @@ resource "aws_waf_sql_injection_match_set" "sql_injection_match_set" {
 ## local or remote files
 
 resource "aws_waf_byte_match_set" "byte_set_traversal" {
-  name  = "${var.stage}_${var.cloudfront_name}__byte_match_set"
+  name  = "${var.stage}_${var.region}_${var.api_name}__byte_match_set"
 
   count = "${var.enabled}"
 
@@ -288,7 +289,7 @@ resource "aws_waf_byte_match_set" "byte_set_traversal" {
 ## Server-side includes & libraries in webroot
 ## Matches request patterns for webroot objects that shouldn't be directly accessible
 resource "aws_waf_byte_match_set" "byte_set_webroot_requests" {
-    name  = "${var.stage}_${var.cloudfront_name}__byte_match_webroot_requests"
+    name  = "${var.stage}_${var.region}_${var.api_name}__byte_match_webroot_requests"
 
     count = "${var.enabled}"
 
@@ -384,89 +385,6 @@ resource "aws_waf_byte_match_set" "byte_set_webroot_requests" {
 
 }
 
-## OWASP Top 10 A8
-resource "aws_waf_byte_match_set" "byte_match_set_CSRF" {
-
-    name  = "${var.stage}_${var.cloudfront_name}_byte_match_set_CSRF_header_token"
-    
-    byte_match_tuples {
-        text_transformation = "LOWERCASE"
-        target_string = "post"
-        positional_constraint = "EXACTLY"
-        
-        field_to_match {
-            type = "METHOD"
-        }
-    }
-
-
-}
-
-resource "aws_waf_size_constraint_set" "size_constraint_set_csrf" {
-
-     name  = "${var.stage}_${var.cloudfront_name}_byte_set_CSRF_header_token"
-
-     size_constraints {
-         text_transformation = "NONE"
-         comparison_operator = "EQ"
-         size = 36
-
-        field_to_match {
-            type = "HEADER"
-            data =  "x-csrf-token"
-        }
-     }
-}
-
-## OWASP Top 10 A7
-
-resource "aws_waf_size_constraint_set" "size_constraint_set" {
-
-    name = "${var.stage}_${var.cloudfront_name}_size_constraint_set"
-
-    size_constraints {
-        text_transformation = "NONE"
-        comparison_operator = "GT"
-        size = 512
-
-        field_to_match {
-            type = "URI"
-        }
-    }
-
-    size_constraints {
-        text_transformation = "NONE"
-        comparison_operator = "GT"
-        size = 1024
-
-        field_to_match {
-            type = "QUERY_STRING"
-        }
-    }
-
-    size_constraints {
-        text_transformation = "NONE"
-        comparison_operator = "GT"
-        size = 4096
-
-        field_to_match {
-            type = "BODY"
-        }
-    }
-
-    size_constraints {
-        text_transformation = "NONE"
-        comparison_operator = "GT"
-        size = 4093
-
-        field_to_match {
-            type = "HEADER"
-            data = "cookie"
-        }
-    }
-
-}
-
 # Rules
 
 ## 10.
@@ -476,9 +394,9 @@ resource "aws_waf_size_constraint_set" "size_constraint_set" {
 
 resource "aws_waf_rule" "ip_blacklist" {
 
-    name        = "${var.stage}_${var.cloudfront_name}_ip_blacklist"
+    name        = "${var.stage}_${var.region}_${var.api_name}_ip_blacklist"
     # metric_name is alpha numeric only.
-    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.cloudfront_name, "/[^a-zA-Z0-9_]/", "")}ipblacklist"
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}ipblacklist"
 
     predicate {
         type    = "IPMatch"
@@ -492,9 +410,9 @@ resource "aws_waf_rule" "ip_blacklist" {
 
 resource "aws_waf_rate_based_rule" "rate_ip_throttle" {
 
-    name        = "${var.stage}_${var.cloudfront_name}_ip_throttle"
+    name        = "${var.stage}_${var.region}_${var.api_name}_ip_throttle"
     # metric_name is alpha numeric only.
-    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.cloudfront_name, "/[^a-zA-Z0-9_]/", "")}ipthrottle"
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}ipthrottle"
 
     rate_key    = "IP"
     rate_limit  = "${var.rate_ip_throttle_limit}"
@@ -515,9 +433,9 @@ resource "aws_waf_rate_based_rule" "rate_ip_throttle" {
 ## Mitigate Cross Site Scripting Attacks
 ## Matches attempted XSS patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_waf_rule" "xss_match_rule" {
-    name        = "${var.stage}_${var.cloudfront_name}_xss_match_rule"
+    name        = "${var.stage}_${var.region}_${var.api_name}_xss_match_rule"
     # metric_name is alpha numeric only.
-    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.cloudfront_name, "/[^a-zA-Z0-9_]/", "")}xssmatchrule"
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}xssmatchrule"
 
     predicate {
         type    = "XssMatch"
@@ -536,9 +454,9 @@ resource "aws_waf_rule" "xss_match_rule" {
 ## Matches attempted SQLi patterns in the URI, QUERY_STRING, BODY, COOKIES
 
 resource "aws_waf_rule" "sql_injection_rule" {
-    name        = "${var.stage}_${var.cloudfront_name}_sql_injection_rule"
+    name        = "${var.stage}_${var.region}_${var.api_name}_sql_injection_rule"
     # metric_name is alpha numeric only.
-    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.cloudfront_name, "/[^a-zA-Z0-9_]/", "")}sqlinjectionrule"
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}sqlinjectionrule"
 
     predicate {
         type    = "SqlInjectionMatch"
@@ -559,9 +477,9 @@ resource "aws_waf_rule" "sql_injection_rule" {
 
 resource "aws_waf_rule" "byte_match_traversal" {
   
-  name        = "${var.stage}_${var.cloudfront_name}_byte_match_traversal"
+  name        = "${var.stage}_${var.region}_${var.api_name}_byte_match_traversal"
   # metric_name is alpha numeric only.
-  metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.cloudfront_name, "/[^a-zA-Z0-9_]/", "")}bytematchtraversalrule"
+  metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}bytematchtraversalrule"
   
   predicate {
       type    = "ByteMatch"
@@ -581,9 +499,9 @@ resource "aws_waf_rule" "byte_match_traversal" {
 ## Matches request patterns for webroot objects that shouldn't be directly accessible
 resource "aws_waf_rule" "byte_match_webroot" {
   
-  name        = "${var.stage}_${var.cloudfront_name}_byte_match_webroot"
+  name        = "${var.stage}_${var.region}_${var.api_name}_byte_match_webroot"
   # metric_name is alpha numeric only.
-  metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.cloudfront_name, "/[^a-zA-Z0-9_]/", "")}bytematchwebrootrule"
+  metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}bytematchwebrootrule"
 
   predicate {
       type    = "ByteMatch"
@@ -600,9 +518,9 @@ resource "aws_waf_rule" "byte_match_webroot" {
 
 # Web ACLs
 resource "aws_waf_web_acl" "rms_web_acl" {
-    name        = "${var.stage}_${var.cloudfront_name}_rms_web_acl"
+    name        = "${var.stage}_${var.region}_${var.api_name}_rms_web_acl"
     # metric_name is alpha numeric only.
-    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.cloudfront_name, "/[^a-zA-Z0-9_]/", "")}rmswebacl"
+    metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}rmswebacl"
     depends_on  = [
         "aws_waf_rate_based_rule.rate_ip_throttle",
         "aws_waf_rule.ip_blacklist",
@@ -634,7 +552,7 @@ resource "aws_waf_web_acl" "rms_web_acl" {
         rule_id   = "${aws_waf_rate_based_rule.rate_ip_throttle.id}"
         # Must be RATE_BASED, GROUP or REGULAR
         # If you fail to declare this, the rule will not be applied to the ACL.
-        # https://docs.aws.amazon.com/waf/latest/APIReference/API_regional_UpdateWebACL.html
+        # https://docs.aws.amazon.com/waf/latest/APIReference/API__UpdateWebACL.html
         type = "RATE_BASED"
     }
     rule {
