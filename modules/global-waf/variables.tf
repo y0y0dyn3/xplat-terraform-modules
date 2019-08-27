@@ -2,10 +2,6 @@ variable "stage" {
     type    = "string"
     default = ""
 }
-variable "region" {
-    type    = "string"
-    default = ""
-}
 variable "acl_association_resource_arn" {
     type    = "string"
     default = ""

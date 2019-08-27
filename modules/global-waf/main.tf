@@ -1,5 +1,4 @@
 provider "aws" {
-  region = "${var.region}"
 }
 
 # for a WAF we specify the conditions -> assign the descriptor to a aws_waf_rule -> assign the rule to a aws_waf_web_acl.
@@ -10,7 +9,7 @@ provider "aws" {
 # Mostly taken from https://s3.us-east-2.amazonaws.com/awswaf-owasp/owasp_10_base.yml
 
 resource "aws_waf_ipset" "iplist_throttle" {
-    name  = "${var.stage}_${var.region}_${var.api_name}_iplist_throttle"
+    name  = "${var.stage}__${var.api_name}_iplist_throttle"
 
     count = "${var.enabled}"
 
@@ -26,7 +25,7 @@ resource "aws_waf_ipset" "iplist_throttle" {
 ## Matches IP addresses that should not be allowed to access content
 
 resource "aws_waf_ipset" "iplist_blacklist" {
-    name  = "${var.stage}_${var.region}_${var.api_name}_iplist_blacklist"
+    name  = "${var.stage}__${var.api_name}_iplist_blacklist"
 
     count = "${var.enabled}"
 
@@ -44,7 +43,7 @@ resource "aws_waf_ipset" "iplist_blacklist" {
 ## Mitigate Cross Site Scripting Attacks
 ## Matches attempted XSS patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_waf_xss_match_set" "xss_match_conditions" {
-    name  = "${var.stage}_${var.region}_${var.api_name}_xss_match_conditions"
+    name  = "${var.stage}__${var.api_name}_xss_match_conditions"
 
     count = "${var.enabled}"
 
@@ -119,7 +118,7 @@ resource "aws_waf_xss_match_set" "xss_match_conditions" {
 ## Mitigate SQL Injection Attacks
 ## Matches attempted SQLi patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_waf_sql_injection_match_set" "sql_injection_match_set" {
-  name = "${var.stage}_${var.region}_${var.api_name}_sql_injection_match_set"
+  name = "${var.stage}__${var.api_name}_sql_injection_match_set"
 
   count = "${var.enabled}"
 
@@ -198,7 +197,7 @@ resource "aws_waf_sql_injection_match_set" "sql_injection_match_set" {
 ## local or remote files
 
 resource "aws_waf_byte_match_set" "byte_set_traversal" {
-  name  = "${var.stage}_${var.region}_${var.api_name}__byte_match_set"
+  name  = "${var.stage}__${var.api_name}__byte_match_set"
 
   count = "${var.enabled}"
 
@@ -289,7 +288,7 @@ resource "aws_waf_byte_match_set" "byte_set_traversal" {
 ## Server-side includes & libraries in webroot
 ## Matches request patterns for webroot objects that shouldn't be directly accessible
 resource "aws_waf_byte_match_set" "byte_set_webroot_requests" {
-    name  = "${var.stage}_${var.region}_${var.api_name}__byte_match_webroot_requests"
+    name  = "${var.stage}__${var.api_name}__byte_match_webroot_requests"
 
     count = "${var.enabled}"
 
@@ -394,7 +393,7 @@ resource "aws_waf_byte_match_set" "byte_set_webroot_requests" {
 
 resource "aws_waf_rule" "ip_blacklist" {
 
-    name        = "${var.stage}_${var.region}_${var.api_name}_ip_blacklist"
+    name        = "${var.stage}__${var.api_name}_ip_blacklist"
     # metric_name is alpha numeric only.
     metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}ipblacklist"
 
@@ -410,7 +409,7 @@ resource "aws_waf_rule" "ip_blacklist" {
 
 resource "aws_waf_rate_based_rule" "rate_ip_throttle" {
 
-    name        = "${var.stage}_${var.region}_${var.api_name}_ip_throttle"
+    name        = "${var.stage}__${var.api_name}_ip_throttle"
     # metric_name is alpha numeric only.
     metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}ipthrottle"
 
@@ -433,7 +432,7 @@ resource "aws_waf_rate_based_rule" "rate_ip_throttle" {
 ## Mitigate Cross Site Scripting Attacks
 ## Matches attempted XSS patterns in the URI, QUERY_STRING, BODY, COOKIES
 resource "aws_waf_rule" "xss_match_rule" {
-    name        = "${var.stage}_${var.region}_${var.api_name}_xss_match_rule"
+    name        = "${var.stage}__${var.api_name}_xss_match_rule"
     # metric_name is alpha numeric only.
     metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}xssmatchrule"
 
@@ -454,7 +453,7 @@ resource "aws_waf_rule" "xss_match_rule" {
 ## Matches attempted SQLi patterns in the URI, QUERY_STRING, BODY, COOKIES
 
 resource "aws_waf_rule" "sql_injection_rule" {
-    name        = "${var.stage}_${var.region}_${var.api_name}_sql_injection_rule"
+    name        = "${var.stage}__${var.api_name}_sql_injection_rule"
     # metric_name is alpha numeric only.
     metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}sqlinjectionrule"
 
@@ -477,7 +476,7 @@ resource "aws_waf_rule" "sql_injection_rule" {
 
 resource "aws_waf_rule" "byte_match_traversal" {
   
-  name        = "${var.stage}_${var.region}_${var.api_name}_byte_match_traversal"
+  name        = "${var.stage}__${var.api_name}_byte_match_traversal"
   # metric_name is alpha numeric only.
   metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}bytematchtraversalrule"
   
@@ -499,7 +498,7 @@ resource "aws_waf_rule" "byte_match_traversal" {
 ## Matches request patterns for webroot objects that shouldn't be directly accessible
 resource "aws_waf_rule" "byte_match_webroot" {
   
-  name        = "${var.stage}_${var.region}_${var.api_name}_byte_match_webroot"
+  name        = "${var.stage}__${var.api_name}_byte_match_webroot"
   # metric_name is alpha numeric only.
   metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}bytematchwebrootrule"
 
@@ -518,7 +517,7 @@ resource "aws_waf_rule" "byte_match_webroot" {
 
 # Web ACLs
 resource "aws_waf_web_acl" "rms_web_acl" {
-    name        = "${var.stage}_${var.region}_${var.api_name}_rms_web_acl"
+    name        = "${var.stage}__${var.api_name}_rms_web_acl"
     # metric_name is alpha numeric only.
     metric_name = "${replace(var.stage, "/[^a-zA-Z0-9_]/", "")}${replace(var.region, "/[^a-zA-Z0-9_]/", "")}${replace(var.api_name, "/[^a-zA-Z0-9_]/", "")}rmswebacl"
     depends_on  = [
